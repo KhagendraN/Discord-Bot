@@ -32,12 +32,14 @@ We use a "Web Service" instead of a "Background Worker" because Render's free ti
 
     | Key | Value Description |
     | :--- | :--- |
+    | `DATABASE_URL` | **Required**: Your PostgreSQL connection string from Supabase. See [SUPABASE_SETUP.md](SUPABASE_SETUP.md) for setup instructions. |
     | `DISCORD_TOKEN` | Your Discord Bot Token. |
     | `MISTRAL_API_KEY` | Your Mistral AI API Key. |
     | `CR_USER_ID` | (Optional) The Discord User ID of the Class Representative. |
     | `CR_ROLE_NAME` | (Optional) The role name for CR permissions (e.g., "CR"). |
     | `ANNOUNCEMENT_CHANNEL_ID` | (Optional) Channel ID for daily reminders. |
-    | `PORT` | `8000` (Optional, defaults to 8000). |
+
+    > **Important**: You must set up a PostgreSQL database first. Follow the [Supabase Setup Guide](SUPABASE_SETUP.md) to create a free database and get your `DATABASE_URL`.
 
 5.  **Deploy**
     *   Click **Create Web Service**.
@@ -58,3 +60,12 @@ If you prefer infrastructure-as-code, you can use the `render.yaml` file include
 *   **Build Failed**: Check the "Logs" tab in Render. Ensure `requirements.txt` has all dependencies.
 *   **Bot Offline**: Check the "Logs" tab. Look for Python errors or "Improper token" messages. Ensure `DISCORD_TOKEN` is correct.
 *   **Health Check Failed**: Ensure `src/keep_alive.py` is running. The Dockerfile is configured to run `./scripts/start.sh`, which starts this script.
+*   **Database Error**: The bot automatically uses `/data/class_data.db` on Render (which is writable). Locally, it uses the project root.
+
+## Important Notes
+
+### Database Persistence
+*   **PostgreSQL (Recommended)**: The bot uses PostgreSQL via the `DATABASE_URL` environment variable for permanent data storage.
+*   **Free Supabase**: 500MB database that never sleeps. Follow [SUPABASE_SETUP.md](SUPABASE_SETUP.md) to set it up.
+*   **SQLite Fallback**: If `DATABASE_URL` is not set, the bot falls back to SQLite (useful for local development).
+*   Your data (schedules, assignments, notes, materials) will persist permanently with PostgreSQL.
