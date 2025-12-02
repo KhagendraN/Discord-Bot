@@ -27,9 +27,31 @@ init_db()
 def auto_import_schedule():
     """Automatically import schedule from main.json, overriding any existing data."""
     try:
-        main_json_path = os.path.join(PROJECT_ROOT, 'main.json')
-        if not os.path.exists(main_json_path):
-            print(f"⚠️ main.json not found at {main_json_path}")
+        # Try multiple possible locations for main.json
+        possible_paths = [
+            os.path.join(PROJECT_ROOT, 'main.json'),  # /app/main.json
+            os.path.join(os.path.dirname(__file__), '..', 'main.json'),  # relative to src
+            '/app/main.json',  # absolute path in Docker
+            'main.json',  # current directory
+        ]
+        
+        print(f"🔍 Looking for main.json...")
+        print(f"   PROJECT_ROOT: {PROJECT_ROOT}")
+        print(f"   Current dir: {os.getcwd()}")
+        
+        main_json_path = None
+        for path in possible_paths:
+            abs_path = os.path.abspath(path)
+            print(f"   Checking: {abs_path}")
+            if os.path.exists(abs_path):
+                main_json_path = abs_path
+                print(f"   ✅ Found at: {abs_path}")
+                break
+        
+        if not main_json_path:
+            print(f"❌ main.json not found in any of these locations:")
+            for path in possible_paths:
+                print(f"   - {os.path.abspath(path)}")
             return
         
         print(f"📅 Importing schedule from {main_json_path}...")
