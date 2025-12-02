@@ -1,0 +1,27 @@
+# Render service definition for deploying as a Web Service (uses Dockerfile)
+# Replace repo/branch and set secrets in the Render dashboard as needed.
+services:
+  - type: "web"
+    name: "class-assistant-bot"
+    env: "docker"
+    plan: "starter"
+    repo: "REPLACE_WITH_YOUR_REPO_URL_OR_LEAVE_BLANK"
+    branch: "main"
+    dockerfilePath: "./Dockerfile"
+    # Render will expose the container PORT via the $PORT env var; keep_alive.py reads PORT.
+    startCommand: "./scripts/start.sh"
+    autoDeploy: true
+    envVars:
+      - key: DISCORD_TOKEN
+        value: "${DISCORD_TOKEN}"
+      - key: CR_USER_ID
+        value: "${CR_USER_ID}"
+      - key: CR_ROLE_NAME
+        value: "${CR_ROLE_NAME}"
+      - key: MISTRAL_API_KEY
+        value: "${MISTRAL_API_KEY}"
+      - key: ANNOUNCEMENT_CHANNEL_ID
+        value: "${ANNOUNCEMENT_CHANNEL_ID}"
+    healthCheckPath: "/health"
+    healthCheckProtocol: "HTTP"
+    
