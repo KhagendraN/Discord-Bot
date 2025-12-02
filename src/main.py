@@ -11,8 +11,10 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from database.database import init_db
+from database.database import init_db, get_db
+from database.models import Schedule as ScheduleModel
 from configuration.config import TOKEN
+from utils import load_main_schedule_from_file
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -20,6 +22,52 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Initialize database
 init_db()
+
+# Auto-import schedule from main.json on startup
+def auto_import_schedule():
+    """Automatically import schedule from main.json, overriding any existing data."""
+    try:
+        main_json_path = os.path.join(PROJECT_ROOT, 'main.json')
+        if not os.path.exists(main_json_path):
+            print(f"⚠️ main.json not found at {main_json_path}")
+            return
+        
+        print(f"📅 Importing schedule from {main_json_path}...")
+        schedule_data = load_main_schedule_from_file(main_json_path)
+        
+        db = get_db()
+        try:
+            # Clear existing schedule data
+            deleted_count = db.query(ScheduleModel).delete()
+            print(f"🗑️ Cleared {deleted_count} existing schedule entries")
+            
+            # Insert new data from main.json
+            entry_count = 0
+            for group, days in schedule_data.items():
+                for day, entries in days.items():
+                    for e in entries:
+                        new_entry = ScheduleModel(
+                            day=day.title(),
+                            time=e.get('time'),
+                            subject=e.get('subject'),
+                            group_name=group,
+                            room=e.get('room', ''),
+                            instructor=e.get('instructor', ''),
+                            note=e.get('note', '')
+                        )
+                        db.add(new_entry)
+                        entry_count += 1
+            db.commit()
+            print(f"✅ Schedule imported successfully! ({entry_count} entries)")
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"❌ Error auto-importing schedule: {e}")
+        import traceback
+        traceback.print_exc()
+
+# Run auto-import
+auto_import_schedule()
 
 @bot.event
 async def on_ready():
