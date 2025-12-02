@@ -55,7 +55,7 @@ def load_main_schedule_from_file(path):
             break
     if not found:
         raise FileNotFoundError(f"Schedule file not found: {path}. Tried: {', '.join(candidate_paths)}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(found, 'r', encoding='utf-8') as f:
         data = json.load(f)
     # Normalize day keys to lowercase
     normalized = {}
@@ -64,7 +64,7 @@ def load_main_schedule_from_file(path):
         for day, entries in days.items():
             normalized[group][day.lower()] = entries
     MAIN_SCHEDULE = normalized
-    MAIN_SCHEDULE_FILE = path
+    MAIN_SCHEDULE_FILE = found
     return MAIN_SCHEDULE
 
 def save_main_schedule_to_file(path=None):
