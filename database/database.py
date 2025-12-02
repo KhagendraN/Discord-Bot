@@ -3,6 +3,10 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, scoped_session
 from .models import Base
 
+# Load .env file to ensure DATABASE_URL is available
+from dotenv import load_dotenv
+load_dotenv()
+
 # Database URL configuration
 # Priority: DATABASE_URL env var (PostgreSQL) > SQLite fallback
 DATABASE_URL = os.getenv('DATABASE_URL')
