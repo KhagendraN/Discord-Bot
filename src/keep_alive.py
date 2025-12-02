@@ -23,8 +23,11 @@ def run_flask():
 def start_bot_process():
     # Start the bot as a subprocess so Flask stays in this process (web service)
     python = sys.executable or "python"
-    # Bot is at src/main.py relative to project root
-    cmd = [python, "main.py"]
+    # Get the directory where keep_alive.py is located (should be src/)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # main.py is in the same directory as keep_alive.py
+    main_py_path = os.path.join(script_dir, "main.py")
+    cmd = [python, main_py_path]
     # Forward stdout/stderr so we can see bot logs in Render
     proc = subprocess.Popen(cmd, stdout=sys.stdout, stderr=sys.stderr)
     return proc
