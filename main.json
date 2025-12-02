@@ -1,0 +1,250 @@
+{
+  "GroupA": {
+    "sunday": [
+      {
+        "time": "7:15–8:00",
+        "subject": "Control System (L+T)",
+        "instructor": "SKR",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "8:00–8:45",
+        "subject": "Advanced Electronics (L)",
+        "instructor": "JKM",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "10:15–13:35",
+        "subject": "Microprocessor Practical",
+        "instructor": "Dr. RKS + KN",
+        "room": "Electronics Lab 4"
+      }
+    ],
+    "monday": [
+      {
+        "time": "7:15–8:00",
+        "subject": "Microprocessor (L)",
+        "instructor": "Dr. RKS",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "8:00–10:15",
+        "subject": "English (T) + English Lab Group A",
+        "instructor": "English Dept",
+        "room": "English Lab"
+      }
+    ],
+    "tuesday": [
+      {
+        "time": "7:15–10:15",
+        "subject": "Control System Practical",
+        "instructor": "YA + AD + AP",
+        "room": "Control Lab",
+        "note": "Group A this week • Alt. week"
+      },
+      {
+        "time": "10:15–11:05",
+        "subject": "Computer Graphics & Visualization (L+T)",
+        "instructor": "JM",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "11:05–11:55",
+        "subject": "Microprocessor (L+T)",
+        "instructor": "Dr. RKS",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "12:45–13:35",
+        "subject": "Mathematics III (L)",
+        "instructor": "AKB",
+        "room": "Lecture Room 4"
+      }
+    ],
+    "wednesday": [
+      {
+        "time": "7:15–8:00",
+        "subject": "Control System (L)",
+        "instructor": "SKR",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "8:00–8:45",
+        "subject": "Computer Graphics & Visualization (L+T)",
+        "instructor": "JM",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "10:15–13:35",
+        "subject": "Computer Graphics Practical",
+        "instructor": "JM + SST",
+        "room": "Computer Lab 6"
+      }
+    ],
+    "thursday": [
+      {
+        "time": "10:15–11:05",
+        "subject": "Mathematics III (L)",
+        "instructor": "VP",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "11:55–14:25",
+        "subject": "Advanced Electronics Practical",
+        "instructor": "JKM + SJ",
+        "room": "Electronics Lab 3",
+        "note": "Group A this week • Alt. week"
+      }
+    ],
+    "friday": [
+      {
+        "time": "7:15–8:00",
+        "subject": "Advanced Electronics (L)",
+        "instructor": "NA",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "8:00–8:45",
+        "subject": "Mathematics III (T)",
+        "instructor": "GBJ",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "8:45–9:30",
+        "subject": "Mathematics III (L)",
+        "instructor": "SG",
+        "room": "Lecture Room 4"
+      }
+    ]
+  },
+  "GroupB": {
+    "sunday": [
+      {
+        "time": "7:15–8:00",
+        "subject": "Control System (L+T)",
+        "instructor": "SKR",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "8:00–8:45",
+        "subject": "Advanced Electronics (L)",
+        "instructor": "JKM",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "14:25–17:25",
+        "subject": "Microprocessor Practical",
+        "instructor": "Dr. RKS + KN",
+        "room": "Electronics Lab 4"
+      }
+    ],
+    "monday": [
+      {
+        "time": "7:15–8:00",
+        "subject": "Microprocessor (L)",
+        "instructor": "Dr. RKS",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "8:00–10:15",
+        "subject": "English (T) + English Lab Group B",
+        "instructor": "English Dept",
+        "room": "English Lab"
+      }
+    ],
+    "tuesday": [
+      {
+        "time": "7:15–10:15",
+        "subject": "Control System Practical",
+        "instructor": "YA + AD + AP",
+        "room": "Control Lab",
+        "note": "Group B this week • Alt. week"
+      },
+      {
+        "time": "10:15–11:05",
+        "subject": "Computer Graphics & Visualization (L+T)",
+        "instructor": "JM",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "11:05–11:55",
+        "subject": "Microprocessor (L+T)",
+        "instructor": "Dr. RKS",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "12:45–13:35",
+        "subject": "Mathematics III (L)",
+        "instructor": "AKB",
+        "room": "Lecture Room 4"
+      }
+    ],
+    "wednesday": [
+      {
+        "time": "7:15–8:00",
+        "subject": "Control System (L)",
+        "instructor": "SKR",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "8:00–8:45",
+        "subject": "Computer Graphics & Visualization (L+T)",
+        "instructor": "JM",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "7:15–10:15",
+        "subject": "Computer Graphics Practical",
+        "instructor": "JM + SST",
+        "room": "Computer Lab 5"
+      }
+    ],
+    "thursday": [
+      {
+        "time": "7:15–10:15",
+        "subject": "Computer Graphics Practical",
+        "instructor": "JM + SST",
+        "room": "Computer Lab 5"
+      },
+      {
+        "time": "10:15–11:05",
+        "subject": "Mathematics III (L)",
+        "instructor": "VP",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "11:55–14:25",
+        "subject": "Advanced Electronics Practical",
+        "instructor": "JKM + SJ",
+        "room": "Electronics Lab 3",
+        "note": "Group B this week • Alt. week"
+      }
+    ],
+    "friday": [
+      {
+        "time": "7:15–8:00",
+        "subject": "Advanced Electronics (L)",
+        "instructor": "NA",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "8:00–8:45",
+        "subject": "Mathematics III (T)",
+        "instructor": "GBJ",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "8:45–9:30",
+        "subject": "Mathematics III (L)",
+        "instructor": "SG",
+        "room": "Lecture Room 4"
+      },
+      {
+        "time": "14:25–17:25",
+        "subject": "Microprocessor Practical",
+        "instructor": "Dr. RKS + KN",
+        "room": "Electronics Lab 4"
+      }
+    ]
+  }
+}
