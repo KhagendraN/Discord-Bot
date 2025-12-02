@@ -23,9 +23,10 @@ def run_flask():
 def start_bot_process():
     # Start the bot as a subprocess so Flask stays in this process (web service)
     python = sys.executable or "python"
+    # Bot is at src/main.py relative to project root
     cmd = [python, "main.py"]
-    # Use Popen so we can forward output
-    proc = subprocess.Popen(cmd)
+    # Forward stdout/stderr so we can see bot logs in Render
+    proc = subprocess.Popen(cmd, stdout=sys.stdout, stderr=sys.stderr)
     return proc
 
 def main():
