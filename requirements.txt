@@ -6,3 +6,4 @@ mistralai>=0.1.0
 asyncio
 requests
 flask
+psycopg2-binary
