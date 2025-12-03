@@ -23,3 +23,4 @@ venv/
 # DisCloud
 .discloud/
 *.db
+*.log
