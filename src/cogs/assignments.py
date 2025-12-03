@@ -1,4 +1,5 @@
 import discord
+import io
 from discord.ext import commands
 import re
 from database.database import get_db
@@ -17,8 +18,11 @@ class Assignments(commands.Cog):
         await ctx.send("Usage: `!assignment add/list/delete`")
 
     @assignment.command()
-    async def add(self, ctx, *, args):
+    async def add(self, ctx, *, args: str = None):
         try:
+            if not args:
+                await ctx.send('Usage: `!assignment add Subject="Math" Topic="Algebra" Due="2025-12-01"`')
+                return
             # Robust parsing with regex: Captures Key="Value" or Key='Value'
             matches = re.findall(r'(\w+)="([^\"]*)"|(\w+)=\'([^\']*)\'', args)
             parts = {}
@@ -111,24 +115,62 @@ class Assignments(commands.Cog):
         db = get_db()
         try:
             items = db.query(Material).all()
-            if items:
-                msg = "**All Google Drive Materials**\n"
-                for i in items:
-                    msg += f"• **{i.subject}**: {i.drive_link}\n"
-                await ctx.send(msg)
-            else:
+        except Exception:
+            db.close()
+            await ctx.send("❌ Failed to read materials from the database.")
+            return
+
+        try:
+            if not items:
                 await ctx.send("No materials uploaded yet.")
+                return
+
+            header = "**All Google Drive Materials**\n"
+            # Build messages under Discord's 2000 char limit (leave some headroom)
+            max_len = 1900
+            current = header
+            for i in items:
+                line = f"• **{i.subject}**: {i.drive_link}\n"
+                if len(current) + len(line) > max_len:
+                    try:
+                        await ctx.send(current)
+                    except Exception:
+                        # fallback: send as file (use BytesIO)
+                        try:
+                            bio = io.BytesIO(current.encode('utf-8'))
+                            bio.seek(0)
+                            await ctx.send(file=discord.File(bio, filename='materials.txt'))
+                        except Exception:
+                            await ctx.send("❌ Failed to send materials list (message too large).")
+                            return
+                    current = header + line
+                else:
+                    current += line
+
+            # send remaining
+            try:
+                await ctx.send(current)
+            except Exception:
+                try:
+                    bio = io.BytesIO(current.encode('utf-8'))
+                    bio.seek(0)
+                    await ctx.send(file=discord.File(bio, filename='materials.txt'))
+                except Exception:
+                    await ctx.send("❌ Failed to send materials list.")
         finally:
             db.close()
 
 
     @materials.command()
     @is_cr()
-    async def add(self, ctx, *, args):
+    async def add(self, ctx, *, args: str = None):
         """Add a Google Drive material link. CR-only.
     
         Expected format: Subject="SubjectName" Link="https://drive.link/..."
         """
+        if not args:
+            await ctx.send('Usage: `!materials add Subject="Math" Link="https://..."`')
+            return
         try:
             matches = re.findall(r'(\w+)="([^"]*)"|(\w+)=\'([^\']*)\'', args)
             parts = {}
@@ -158,11 +200,15 @@ class Assignments(commands.Cog):
 
     @materials.command()
     @is_cr()
-    async def delete(self, ctx, *, args):
+    async def delete(self, ctx, *, args: str = None):
         """Delete a material by subject+link. CR-only.
     
         Expected: Subject="Math" Link="https://..."
         """
+        # If user didn't provide args, show usage instead of raising a framework error
+        if not args:
+            await ctx.send('Usage: `!materials delete Subject="Math" Link="https://..."`')
+            return
         try:
             matches = re.findall(r'(\w+)="([^"]*)"|(\w+)=\'([^\']*)\'', args)
             parts = {}

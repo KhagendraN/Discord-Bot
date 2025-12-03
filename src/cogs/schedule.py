@@ -271,10 +271,13 @@ class Schedule(commands.Cog):
 
     @schedule.command()
     @is_cr()
-    async def edit(self, ctx, *, args):
+    async def edit(self, ctx, *, args: str = None):
         """Edit a class time/subject. Usage:
         !schedule edit GroupA monday 9:00 AM Math 10:00 AM Math permanent|temporary
         """
+        if not args:
+            await ctx.send("❌ Invalid format. Usage: `!schedule edit GroupA monday 9:00 AM Math 10:00 AM Math permanent` (use 'temporary' or 'permanent')")
+            return
         parsed = _parse_edit_cancel_args(args)
         if not parsed or 'new_time' not in parsed:
             await ctx.send("❌ Invalid format. Usage: `!schedule edit GroupA monday 9:00 AM Math 10:00 AM Math permanent` (use 'temporary' or 'permanent')")
@@ -316,8 +319,11 @@ class Schedule(commands.Cog):
 
     @schedule.command()
     @is_cr()
-    async def cancel(self, ctx, *, args):
+    async def cancel(self, ctx, *, args: str = None):
         """Cancel a class. Usage: !schedule cancel GroupA monday 9:00 AM Math permanent|temporary"""
+        if not args:
+            await ctx.send("❌ Invalid format. Usage: `!schedule cancel GroupA monday 9:00 AM Math permanent`")
+            return
         parsed = _parse_edit_cancel_args(args)
         if not parsed:
             await ctx.send("❌ Invalid format. Usage: `!schedule cancel GroupA monday 9:00 AM Math permanent`")

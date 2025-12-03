@@ -12,8 +12,11 @@ class AI(commands.Cog):
     #===============================================>AI ASK<=======================================================
     #==============================================================================================================
     @commands.command()
-    async def ask(self, ctx, *, question):
+    async def ask(self, ctx, *, question: str = None):
         # Try local DB first
+        if not question:
+            await ctx.send('Usage: `!ask <question>`')
+            return
         db = get_db()
         try:
             exams = db.query(Assessment).order_by(Assessment.date).all()
