@@ -2,7 +2,7 @@ name: Keep Alive
 
 on:
   schedule:
-    - cron: '*/3 * * * *' # Runs every 3 minutes to keep the Render service active
+    - cron: '*/1 * * * *' # Runs every 1 minutes to keep the Render service active
   workflow_dispatch: 
 
 jobs:
