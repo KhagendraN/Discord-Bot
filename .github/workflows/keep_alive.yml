@@ -1,0 +1,15 @@
+name: Keep Alive
+
+on:
+  schedule:
+    - cron: '*/3 * * * *' # Runs every 3 minutes to keep the Render service active
+  workflow_dispatch: 
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping URL
+        run: |
+          curl -I https://class-assistant-bot.onrender.com/
+          echo "Pinged https://class-assistant-bot.onrender.com/"
