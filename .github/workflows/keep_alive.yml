@@ -2,14 +2,25 @@ name: Keep Alive
 
 on:
   schedule:
-    - cron: '*/1 * * * *' # Runs every 1 minutes to keep the Render service active
+    - cron: '*/1 * * * *' # Runs every 1 minute to keep the Render service active
   workflow_dispatch: 
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping URL
+      - name: Ping URL and Show Status
         run: |
-          curl -I https://class-assistant-bot.onrender.com/
-          echo "Pinged https://class-assistant-bot.onrender.com/"
+          # Send a HEAD request and capture the HTTP status code
+          response=$(curl -I -s https://class-assistant-bot.onrender.com/ -o /dev/null -w "%{http_code}")
+          
+          # Show the status code in the output
+          echo "Pinged https://class-assistant-bot.onrender.com/ with status code: $response"
+          
+          # Optional: You can also handle success/failure based on status code
+          if [ "$response" -eq 200 ]; then
+            echo "Successfully pinged the service!"
+          else
+            echo "Failed to ping the service. Status code: $response"
+            exit 1  # This will mark the workflow as failed if the status code is not 200
+          fi
