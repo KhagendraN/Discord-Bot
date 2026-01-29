@@ -44,13 +44,10 @@ logger.addHandler(ch)
 logger.addHandler(fh)
 
 
-# ----- Bot setup ---------------------------------------------------------
+# ----- Bot setup (Placeholder) -------------------------------------------
 intents = discord.Intents.default()
 intents.message_content = True
-
-# Force IPv4 to avoid DNS issues on some hosting providers (like HF Spaces)
-connector = aiohttp.TCPConnector(family=socket.AF_INET)
-bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
+bot = None  # Will be initialized in main()
 
 
 # ----- Health Check Server (for HF Spaces) --------------------------------
@@ -155,61 +152,18 @@ def auto_import_schedule(override: bool = False):
         logger.exception(f"❌ Error auto-importing schedule: {e}")
 
 
-@bot.event
-async def on_ready():
-    logger.info(f"{bot.user} is online!")
 
 
-@bot.event
-async def on_command_error(ctx, error):
-    # Global handler for command errors to ensure they are logged and user is notified
-    try:
-        # Handle missing required argument gracefully
-        if isinstance(error, commands.MissingRequiredArgument):
-            param = error.param.name if hasattr(error, 'param') else 'argument'
-            usage = ''
-            if ctx.command:
-                usage = f" Usage: `!{ctx.command.qualified_name} {ctx.command.signature}`"
-            await ctx.send(f"❌ Missing required argument: `{param}`.{usage}")
-            logger.warning(f"Missing argument in command {ctx.command}: {param}")
-            return
-
-        logger.exception(f"Error in command '{getattr(ctx, 'command', None)}': {error}")
-        # Friendly message to channel
-        await ctx.send("❌ An error occurred while processing your command. The error has been logged.")
-    except Exception:
-        logger.exception("Failed in on_command_error handler")
-
-
-@bot.event
-async def on_message(message: discord.Message):
-    try:
-        # Ignore webhooks
-        if getattr(message, 'webhook_id', None) is not None:
-            return
-
-        if message.author == bot.user:
-            # message by bot
-            logger.info(f"message by bot: channel={getattr(message.channel, 'name', message.channel.id)} content={message.content}")
-        else:
-            # message to bot
-            logger.info(f"message to bot: author={message.author} channel={getattr(message.channel, 'name', message.channel.id)} content={message.content}")
-
-        # ensure commands still processed
-        await bot.process_commands(message)
-    except Exception:
-        logger.exception("Error in on_message handler")
-
-
-async def load_extensions():
+async def load_extensions(bot_instance):
     # Load all cogs from the cogs directory
     cogs_dir = os.path.join(os.path.dirname(__file__), 'cogs')
     for filename in os.listdir(cogs_dir):
         if filename.endswith('.py') and filename != '__init__.py':
-            await bot.load_extension(f'cogs.{filename[:-3]}')
+            await bot_instance.load_extension(f'cogs.{filename[:-3]}')
 
 
 async def main(argv=None):
+    global bot
     parser = argparse.ArgumentParser(description='Start the Discord bot')
     parser.add_argument('--override', action='store_true', help='Override existing schedule data in DB with main.json')
     args = parser.parse_args(argv)
@@ -221,6 +175,41 @@ async def main(argv=None):
         logger.error(f"❌ Database initialization failed: {e}")
         logger.error("   Check your DATABASE_URL in .env or Supabase credentials.")
         sys.exit(1)
+
+    # Force IPv4 to avoid DNS issues on some hosting providers (like HF Spaces)
+    # This must be created inside the async main() to have a running event loop
+    connector = aiohttp.TCPConnector(family=socket.AF_INET)
+    bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
+
+    # ----- Bot Events -------------------------------------------------------
+    @bot.event
+    async def on_ready():
+        logger.info(f"{bot.user} is online!")
+
+    @bot.event
+    async def on_command_error(ctx, error):
+        try:
+            if isinstance(error, commands.MissingRequiredArgument):
+                param = error.param.name if hasattr(error, 'param') else 'argument'
+                usage = f" Usage: `!{ctx.command.qualified_name} {ctx.command.signature}`" if ctx.command else ''
+                await ctx.send(f"❌ Missing required argument: `{param}`.{usage}")
+                return
+            logger.exception(f"Error in command '{getattr(ctx, 'command', None)}': {error}")
+            await ctx.send("❌ An error occurred while processing your command.")
+        except Exception:
+            logger.exception("Failed in on_command_error handler")
+
+    @bot.event
+    async def on_message(message: discord.Message):
+        try:
+            if getattr(message, 'webhook_id', None) is not None: return
+            if message.author == bot.user:
+                logger.info(f"message by bot: channel={getattr(message.channel, 'name', message.channel.id)} content={message.content}")
+            else:
+                logger.info(f"message to bot: author={message.author} channel={getattr(message.channel, 'name', message.channel.id)} content={message.content}")
+            await bot.process_commands(message)
+        except Exception:
+            logger.exception("Error in on_message handler")
 
     # Import schedule according to flag
     try:
@@ -236,7 +225,7 @@ async def main(argv=None):
 
     # Start bot
     async with bot:
-        await load_extensions()
+        await load_extensions(bot)
         await bot.start(TOKEN)
 
 
