@@ -176,9 +176,22 @@ async def main(argv=None):
         logger.error("   Check your DATABASE_URL in .env or Supabase credentials.")
         sys.exit(1)
 
-    # Force IPv4 to avoid DNS issues on some hosting providers (like HF Spaces)
-    # This must be created inside the async main() to have a running event loop
-    connector = aiohttp.TCPConnector(family=socket.AF_INET)
+    # Diagnostic: Check DNS resolution before starting
+    logger.info("🔍 Diagnostic: Checking DNS resolution for discord.com...")
+    for family in [socket.AF_INET, socket.AF_INET6, socket.AF_UNSPEC]:
+        fam_name = "IPv4" if family == socket.AF_INET else "IPv6" if family == socket.AF_INET6 else "ANY"
+        try:
+            addr = socket.getaddrinfo("discord.com", 443, family=family)
+            logger.info(f"   ✅ {fam_name} resolution: {addr[0][4][0]}")
+        except Exception as e:
+            logger.warning(f"   ❌ {fam_name} resolution failed: {e}")
+
+    # Add a small delay to ensure network is fully ready (common on HF Spaces)
+    logger.info("⏳ Waiting 5 seconds for network stability...")
+    await asyncio.sleep(5)
+
+    # Use AF_UNSPEC (0) to allow both IPv4 and IPv6, which is more robust
+    connector = aiohttp.TCPConnector(family=socket.AF_UNSPEC)
     bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
 
     # ----- Bot Events -------------------------------------------------------
@@ -223,10 +236,25 @@ async def main(argv=None):
     except Exception as e:
         logger.error(f"❌ Failed to start health check server: {e}")
 
-    # Start bot
-    async with bot:
-        await load_extensions(bot)
-        await bot.start(TOKEN)
+    # Start bot with retry logic for DNS/Connection issues
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            async with bot:
+                await load_extensions(bot)
+                await bot.start(TOKEN)
+            break # Success!
+        except (aiohttp.ClientConnectorDNSError, socket.gaierror) as e:
+            wait_time = 2 ** attempt # Exponential backoff
+            if attempt < max_retries - 1:
+                logger.warning(f"📡 DNS/Connection error: {e}. Retrying in {wait_time}s... (Attempt {attempt+1}/{max_retries})")
+                await asyncio.sleep(wait_time)
+            else:
+                logger.error(f"❌ Max retries reached. Could not connect to Discord: {e}")
+                raise
+        except Exception as e:
+            logger.exception(f"❌ Unexpected error during bot startup: {e}")
+            raise
 
 
 if __name__ == '__main__':
