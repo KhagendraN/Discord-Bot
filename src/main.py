@@ -14,6 +14,7 @@ import sys
 import asyncio
 import discord
 from discord.ext import commands
+from aiohttp import web
 
 # Ensure project root is on sys.path so packages at repo root (e.g., database, configuration)
 # can be imported when running this file as a script: `python src/main.py`.
@@ -45,6 +46,22 @@ logger.addHandler(fh)
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
+
+
+# ----- Health Check Server (for HF Spaces) --------------------------------
+async def health_check(request):
+    return web.json_response({"status": "healthy", "bot": str(bot.user or "starting")})
+
+async def start_health_server():
+    app = web.Application()
+    app.router.add_get('/health', health_check)
+    app.router.add_get('/', health_check)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", "7860"))
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+    logger.info(f"🚀 Health check server started on port {port}")
 
 
 # Initialize database
@@ -205,6 +222,12 @@ async def main(argv=None):
         auto_import_schedule(override=args.override)
     except Exception:
         logger.exception('Auto-import schedule failed')
+
+    # Start health check server
+    try:
+        await start_health_server()
+    except Exception as e:
+        logger.error(f"❌ Failed to start health check server: {e}")
 
     # Start bot
     async with bot:

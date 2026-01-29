@@ -31,5 +31,11 @@ ENV HOME=/home/appuser \
 
 
 
+# Expose the port that Hugging Face Spaces expects
+EXPOSE 7860
+
+# Set the PORT environment variable to 7860
+ENV PORT=7860
+
 # Default command
 CMD ["/app/scripts/start.sh"]
