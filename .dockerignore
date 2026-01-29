@@ -8,4 +8,4 @@ venv/
 .git
 .gitignore
 class_data.db
-main.json
+
