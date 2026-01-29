@@ -1,0 +1,26 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Database (will be recreated)
+# class_data.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# DisCloud
+.discloud/
+*.db
+*.log
