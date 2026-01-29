@@ -7,6 +7,7 @@ WORKDIR /app
 # Install system deps (if any)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install

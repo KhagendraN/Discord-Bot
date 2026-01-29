@@ -15,6 +15,8 @@ import asyncio
 import discord
 from discord.ext import commands
 from aiohttp import web
+import aiohttp
+import socket
 
 # Ensure project root is on sys.path so packages at repo root (e.g., database, configuration)
 # can be imported when running this file as a script: `python src/main.py`.
@@ -45,7 +47,10 @@ logger.addHandler(fh)
 # ----- Bot setup ---------------------------------------------------------
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix="!", intents=intents)
+
+# Force IPv4 to avoid DNS issues on some hosting providers (like HF Spaces)
+connector = aiohttp.TCPConnector(family=socket.AF_INET)
+bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
 
 
 # ----- Health Check Server (for HF Spaces) --------------------------------
