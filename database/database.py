@@ -9,7 +9,7 @@ load_dotenv()
 
 # Database URL configuration
 # Priority: DATABASE_URL env var (PostgreSQL) > SQLite fallback
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv('DATABASE_URL', '').strip() or None
 
 if DATABASE_URL:
     # Production: Use PostgreSQL from environment variable
