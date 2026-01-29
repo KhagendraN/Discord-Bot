@@ -17,7 +17,9 @@ if DATABASE_URL:
     if DATABASE_URL.startswith('postgres://'):
         DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
     
-    engine = create_engine(DATABASE_URL)
+    # pool_pre_ping=True helps with "Connection timed out" errors by checking if the connection is alive
+    # pool_recycle=3600 ensures connections are refreshed every hour
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_recycle=3600)
 else:
     # Local development: Use SQLite
     # Store DB file in /data if available (writable volume), or project root locally
@@ -52,9 +54,5 @@ def init_db():
             conn.commit()
 
 def get_db():
-    """Provide a transactional scope around a series of operations."""
-    db = SessionLocal()
-    try:
-        return db
-    finally:
-        db.close()
+    """Provide a new database session. Caller is responsible for closing it."""
+    return SessionLocal()
