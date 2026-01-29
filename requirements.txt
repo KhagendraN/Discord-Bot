@@ -2,9 +2,9 @@ discord.py>=2.3.0
 python-dotenv>=1.0.0
 sqlalchemy>=2.0.0
 aiohttp>=3.9.0
+aiodns
 mistralai>=0.1.0
 asyncio
 requests
-flask
 psycopg2-binary
 APScheduler==3.10.4
