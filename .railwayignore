@@ -1,0 +1,21 @@
+# Railway ignore file - similar to .gitignore
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+.env.local
+.vscode/
+.idea/
+*.log
+.DS_Store
+guides/
+README.md

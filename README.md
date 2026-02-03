@@ -26,7 +26,9 @@ This repository contains the Class Assistant Bot used to fetch and present sched
 - [Running locally](#running-locally)
 - [CLI flags](#cli-flags)
 - [Commands overview](#commands-overview)
-- [Deployment (Hugging Face Spaces + Supabase)](#deployment-hugging-face-spaces--supabase)
+- [Deployment](#deployment)
+  - [Railway (Recommended)](#railway-recommended)
+  - [Other Platforms](#other-platforms)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 
@@ -104,24 +106,39 @@ Type `!bothelp` in Discord to get the dynamic help menu. Example commonly used c
 
 The bot also supports grouped commands (e.g., `!assignment add/list/delete`) — use `!bothelp <category>` or `!bothelp <command>` for detailed usage.
 
-## Deployment (Hugging Face Spaces + Supabase)
+## Deployment
 
-1. Create a Supabase project and get your PostgreSQL connection string (set it to `DATABASE_URL` in HF Spaces).
-2. Create a new Space on Hugging Face, select **Docker** as the SDK.
-3. Add the necessary environment variables (Secrets) in the Space settings:
-   - `DISCORD_TOKEN`
-   - `DATABASE_URL`
-   - `MISTRAL_API_KEY`
-   - `CR_USER_ID`
-   - `CR_ROLE_NAME`
-   - `ANNOUNCEMENT_CHANNEL_ID`
-4. The Space will build using the `Dockerfile` and start the bot.
+### Railway (Recommended)
 
+Railway.app is the recommended platform for deploying Discord bots because it:
+- ✅ Supports outbound connections to Discord's API
+- ✅ Offers a free tier (500 hours/month)
+- ✅ Provides easy GitHub integration
+- ✅ Includes built-in PostgreSQL database
+- ✅ Auto-restarts on failure
 
+**Quick Start:**
 
+1. Push your code to GitHub
+2. Sign up at [railway.app](https://railway.app)
+3. Click "New Project" → "Deploy from GitHub repo"
+4. Add environment variables (see Configuration section)
+5. Deploy! 🚀
 
-Notes about persistence
-- Use Supabase (PostgreSQL) in production for reliable persistence. If no `DATABASE_URL` is configured the bot will use SQLite for local testing only.
+**Detailed Guide:** See [guides/RAILWAY_DEPLOYMENT_GUIDE.md](guides/RAILWAY_DEPLOYMENT_GUIDE.md)
+
+### Other Platforms
+
+- **Render.com** - Similar to Railway, free tier available
+- **Fly.io** - Free tier with limited resources
+- **DigitalOcean/Linode/AWS EC2** - VPS hosting for more control
+
+**⚠️ Note about Hugging Face Spaces:**
+HF Spaces **does not support Discord bots** due to network restrictions. Discord bots require persistent outbound connections which are blocked in HF Spaces' sandboxed environment. Use Railway or other platforms listed above instead.
+
+**Notes about persistence:**
+- Use Supabase (PostgreSQL) or Railway's built-in PostgreSQL in production for reliable persistence
+- If no `DATABASE_URL` is configured, the bot will fall back to SQLite (local testing only)
 
 ## Logging
 - Console: INFO and above
