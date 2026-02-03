@@ -15,6 +15,27 @@ class Schedule(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def _send_long_message(self, ctx, content, max_length=2000):
+        """Split and send long messages that exceed Discord's 2000 character limit."""
+        if len(content) <= max_length:
+            await ctx.send(content)
+            return
+        
+        # Split by lines to avoid breaking in the middle of content
+        lines = content.split('\n')
+        current_msg = ""
+        
+        for line in lines:
+            if len(current_msg) + len(line) + 1 > max_length:
+                if current_msg:
+                    await ctx.send(current_msg)
+                current_msg = line + '\n'
+            else:
+                current_msg += line + '\n'
+        
+        if current_msg:
+            await ctx.send(current_msg)
+
     def _format_schedule_entry(self, e):
         """Helper to format a single schedule entry."""
         subject = e.get('subject', 'Unknown')
@@ -87,7 +108,7 @@ class Schedule(commands.Cog):
                 for e in sorted(entries, key=lambda x: x['time']):
                     msg += self._format_schedule_entry(e) + "\n"
 
-            await ctx.send(msg)
+            await self._send_long_message(ctx, msg)
         finally:
             db.close()
 
@@ -124,7 +145,7 @@ class Schedule(commands.Cog):
                 for e in sorted(entries, key=lambda x: x['time']):
                     msg += self._format_schedule_entry(e) + "\n"
 
-            await ctx.send(msg)
+            await self._send_long_message(ctx, msg)
         finally:
             db.close()
 
@@ -163,7 +184,7 @@ class Schedule(commands.Cog):
                 for e in sorted(entries, key=lambda x: x['time']):
                     msg += self._format_schedule_entry(e) + "\n"
 
-            await ctx.send(msg)
+            await self._send_long_message(ctx, msg)
         finally:
             db.close()
 
@@ -198,7 +219,7 @@ class Schedule(commands.Cog):
                             day_msg += self._format_schedule_entry(e) + "\n"
                     
                     if len(msg) + len(day_msg) > 1900:
-                        await ctx.send(msg)
+                        await self._send_long_message(ctx, msg)
                         msg = day_msg
                     else:
                         msg += day_msg
@@ -208,7 +229,7 @@ class Schedule(commands.Cog):
                 return
             
             if msg:
-                await ctx.send(msg)
+                await self._send_long_message(ctx, msg)
         finally:
             db.close()
 
@@ -373,7 +394,7 @@ class Schedule(commands.Cog):
         msg = f"**{group} schedule for {day.title()} (week {week_key[1]})**\n"
         for e in merged:
             msg += self._format_schedule_entry(e) + "\n"
-        await ctx.send(msg)
+        await self._send_long_message(ctx, msg)
 
 async def setup(bot):
     await bot.add_cog(Schedule(bot))
